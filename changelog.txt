@@ -1,0 +1,19 @@
+Mint - Changelog
+
+0.8.1 
+
+Fixes: 
+* Fixed pinch/zoom calculations on small screens
+* Limited pan on zoom-out images to prevent dragging images off the screen
+
+Known bugs:
+
+* Using mint leaves a huge empty scrollable area on mobile browsers/webviews
+* Limited pan after pinching calculations are not applied correctly
+* Would be nice to completely disable scrolling while image is zoomed out
+
+Todo:
+
+* Add not-zoom-out image
+* Test on wp8/w8 
+* find a better way of zooming-out the zoom-in images. Double tap just doesn't sound right
