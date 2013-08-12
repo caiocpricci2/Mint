@@ -178,13 +178,14 @@ function Mint() {
     }
 
     function callSetRectBounds() {
+	
         setInitialRectBounds(this);
     }
 
     function setInitialRectBounds(image) {
         initialBoundRectTop = image.getBoundingClientRect().top;
         initialBoundRectLeft = image.getBoundingClientRect().left;
-        console.log(initialBoundRectTop, initialBoundRectLeft);
+        
         image.removeEventListener("webkitTransitionEnd", callSetRectBounds);
     }
 
@@ -301,7 +302,7 @@ function Mint() {
             
             var diffX = (offs[0] * scale) + (e.changedTouches[0].pageX - startX) ; 
             var diffY = (offs[1] * scale) + (e.changedTouches[0].pageY - startY) ; 
-            console.log(diffX, diffY);
+            
 
             var boundsRect = currentImage.getBoundingClientRect();
 
@@ -309,15 +310,16 @@ function Mint() {
             var limitRight = (window.innerWidth - boundsRect.width) ;
             var limitBottom = (window.innerHeight - boundsRect.height) ;
           
-            diffY = (initialBoundRectTop + (diffY) > 0) ? 0 :
+            
+            diffY = (initialBoundRectTop + (diffY) > 0) ? previousDiffY :
                         (initialBoundRectTop + (diffY) < limitBottom) ? previousDiffY :
                             diffY;
-            diffX = (initialBoundRectLeft + (diffX) > 0) ? 0:
+            diffX = (initialBoundRectLeft + (diffX) > 0) ? previousDiffX :
                         (initialBoundRectLeft + (diffX) < limitRight) ? previousDiffX :
                             diffX;
                                                 
            
-           
+            console.log(diffY, previousDiffY);
             if (Math.abs(diffX) > 1 || Math.abs(diffY > 1)) {
                 previousDiffX = diffX;
                 previousDiffY = diffY;                
