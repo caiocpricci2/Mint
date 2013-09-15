@@ -9,7 +9,7 @@ Fixes:
 Known bugs:
 
 * Using mint leaves a huge empty scrollable area on mobile browsers/webviews
-* Limited pan after pinching calculations are not applied correctly
+* Limited pan after zoom calculations are not applied correctly
 * Would be nice to completely disable scrolling while image is zoomed out
 
 Todo:

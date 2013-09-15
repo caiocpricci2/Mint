@@ -92,6 +92,15 @@ function Mint() {
             if (prop[0].toLowerCase().trim() == property)
                 return prop[1];
         }
+        console.log(property);
+        switch (property) {
+            case "translate3d":
+                return "0,0,0";
+                break;
+            case "scale":
+                return "1";
+                break;
+        }
         return false;
     }
 
@@ -112,17 +121,11 @@ function Mint() {
 
     function mint(container, imageSrc) {
 
-
-        var container = document.getElementById(container);
-
-
+       
         var image = new Image();
-
-
         var hMargin = 10;
         var vMargin = 10;
         var availableWidth = container.offsetWidth - 2 * hMargin;
-
         var availableHeight = container.offsetHeight - 2 * vMargin;
 
         image.onload = function () {
@@ -145,6 +148,22 @@ function Mint() {
         image.style.width = "100%";
 
         container.appendChild(image);
+
+    }
+
+    function mintNoZoom(container,imageSrc){
+        var image = new Image();
+
+        image.onload = function () {
+        
+            changecssproperty(this, csstransition, "-webkit-transform 0.5s linear");
+
+        };
+        image.src = imageSrc;                
+        container.style.overflow = "hidden";
+        container.style.height = "100%";
+        container.appendChild(image);
+        setDragEvents(image);
 
     }
 
@@ -172,7 +191,7 @@ function Mint() {
         changecssproperty(this, csstransform, "scale(" + scale + ") translate3d(0,0,0)");
 
         currentImage.removeEventListener('click', zoomin, false);
-        setDragEvents(this);
+        setDragEvents();
 
         
     }
@@ -200,14 +219,16 @@ function Mint() {
             currentImage.addEventListener('click', zoomin, false);
             initialBoundRectTop = 0;
             initialBoundRectLeft = 0;
-            currentImage = null;
+            currentImage = undefined;
         }, 500);
         unsetDragEvents();
-        
+       
     }
 
     function mousedown(e) {
-
+        if (currentImage === undefined)
+            currentImage = this;
+        console.log(currentImage);
         e.targetTouches = [{
             pageX: e.clientX,
             pageY: e.clientY
@@ -229,40 +250,57 @@ function Mint() {
 
     }
     function mouseup(e) {
+        
         dragUp(e);
-        e.preventDefault();
+        e.preventDefault();        
         return false;
     }
 
 
     function setDragEvents(el) {
 
-        document.body.addEventListener('mousedown', mousedown, false);
-        document.body.addEventListener("mousemove", mousemove, false);
-        document.body.addEventListener("mouseup", mouseup, false);
+        if (el == undefined) {
+            document.body.addEventListener('mousedown', mousedown, false);
+            document.body.addEventListener("mousemove", mousemove, false);
+            document.body.addEventListener("mouseup", mouseup, false);
 
-        document.body.addEventListener('touchstart', dragDown, false);
-        document.body.addEventListener("touchmove", dragMove, false);
-        document.body.addEventListener("touchend", dragUp, false);
+            document.body.addEventListener('touchstart', dragDown, false);
+            document.body.addEventListener("touchmove", dragMove, false);
+            document.body.addEventListener("touchend", dragUp, false);
+        } else {
+
+            el.addEventListener('mousedown', mousedown, false);
+            el.addEventListener("mousemove", mousemove, false);
+            el.addEventListener("mouseup", mouseup, false);
+
+            el.addEventListener('touchstart', dragDown, false);
+            el.addEventListener("touchmove", dragMove, false);
+            el.addEventListener("touchend", dragUp, false);
+        }
+
     }
 
-    function unsetDragEvents() {
+    function unsetDragEvents(el) {
+        if (el == undefined) {
+            document.body.removeEventListener('mousedown', mousedown, false);
+            document.body.removeEventListener("mousemove", mousemove, false);
+            document.body.removeEventListener("mouseup", mouseup, false);
 
-        document.body.removeEventListener('mousedown', mousedown, false);
-        document.body.removeEventListener("mousemove", mousemove, false);
-        document.body.removeEventListener("mouseup", mouseup, false);
+            document.body.removeEventListener('touchstart', dragDown, false);
+            document.body.removeEventListener("touchmove", dragMove, false);
+            document.body.removeEventListener("touchend", dragUp, false);
 
-        document.body.removeEventListener('touchstart', dragDown, false);
-        document.body.removeEventListener("touchmove", dragMove, false);
-        document.body.removeEventListener("touchend", dragUp, false);
-
-        setTimeout(function () { zoomingOut = false; }, 300);
+            setTimeout(function () { zoomingOut = false; }, 300);
+        }
 
     }
 
     function dragDown(e) {
 
-
+        
+        if (currentImage === undefined)
+            currentImage = this;
+        console.log(getTransformValue(currentImage, "translate3d"));
         offs = getTransformValue(currentImage, "translate3d").split(",");
         offs[0] = Number(offs[0].substring(0, offs[0].length - 2));
         offs[1] = Number(offs[1].substring(0, offs[1].length - 2));
@@ -372,12 +410,13 @@ function Mint() {
             previousDiffX = 0;
             previousDiffY = 0;
             disablePan = true;
-            
+
             setInitialRectBounds(this);
             setTimeout(function () { disablePan = false }, 200);
         }
-        else
+        else {            
             touched = false;
+        }
 
         e.preventDefault();
         diffX = 0;
@@ -390,10 +429,9 @@ function Mint() {
         htmlElement = document.getElementsByTagName("html")[0];
         var allImages = document.getElementsByTagName("img");
 
-
         for (var i = 0; i < allImages.length; i++) {
             var el = allImages[i];
-
+            
             if (!el.classList.contains(mintClassName))
                 return;
 
@@ -402,7 +440,12 @@ function Mint() {
             newDiv.id = id;
             newDiv.class = "mintImage";
             el.parentNode.replaceChild(newDiv, el);
-            mint(id, el.src);
+            if (el.classList.contains("noZoom"))
+                mintNoZoom(newDiv, el.src);
+            else
+                mint(newDiv, el.src);
+                
+            
         }
     }
 }
