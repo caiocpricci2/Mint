@@ -21,15 +21,33 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-function Mint() {
+function Mint(params) {
+
+
+    if (params.src == "undefined" || params.src == undefined || params.src == "null" || params.src == null) {
+        console.error("No image source");
+        return;
+    }
     
-    //things you might need to change
-    var mintClassName = "mintifyMe"; //if by any chance you have another mintifyMe class, rename this to something unique
+    if (params.container == "undefined" || params.container == undefined || params.container == "null" || params.container == null) {       
+        console.error("No container defined");
+        return;
+    }
+
+    var opt = {
+        src: "",      //path to source 
+        container: "", //container id
+        isZoomOut: true
+    };
+
+    for (i in params) opt[i] = params[i]; //store the params
+    
+    //things you might need to change    
     var initialZIndex = 300; // mint relies on the z-index to display images. For obvious reasons all zoom-out images must have a high z-index
 
-    var currentImage; //current zoomed image, can only have one at a time. 
+    var currentImage; //current zoomed image
     var htmlElement; //holds the html element.
-    var darkOverlay; //dar overlay displayed above everything else, behind the zoomed in image
+    var darkOverlay; //dark overlay displayed above everything else, behind the zoomed in image
     var csstransform = getsupportedprop(['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform'])
     var csstransition = getsupportedprop(['transition', 'MozTransition', 'WebkitTransition', 'msTransition', 'OTransition'])
     var csstransformorigin = getsupportedprop(['transform-origin', 'MozTransform-origin', 'WebkitTransform-origin', 'msTransform-origin', 'OTransform-origin'])
@@ -65,6 +83,22 @@ function Mint() {
 
     //stores initial images properties values
     var imageProps = {};
+
+
+
+    //********************//   Constructor  //*********************//
+    setDarkOverlay();
+    htmlElement = document.getElementsByTagName("html")[0];
+    var container = document.getElementById(opt.container);
+    container.class = "mintImage";
+    if (opt.isZoomOut)
+        mint(container);
+    else
+        mintNoZoom(container);
+    //*******************//  END Constructor //*******************//
+
+
+    //******************* Private methods //*******************//
 
     function getsupportedprop(proparray) {
         var root = document.documentElement//reference root element of document
@@ -119,9 +153,7 @@ function Mint() {
         document.getElementsByTagName('body')[0].appendChild(darkOverlay);
     }
 
-    function mint(container, imageSrc) {
-
-       
+    function mint(container) {                   
         var image = new Image();
         var hMargin = 10;
         var vMargin = 10;
@@ -143,7 +175,7 @@ function Mint() {
             changecssproperty(this, csstransition, "-webkit-transform 0.5s linear");
 
         };
-        image.src = imageSrc;
+        image.src = opt.src;
         image.style.position = "relative";        
         image.style.width = "100%";
 
@@ -422,32 +454,7 @@ function Mint() {
         diffX = 0;
         diffY = 0;
     }
-
-
-    this.mintifyMe = function () {
-        setDarkOverlay();
-        htmlElement = document.getElementsByTagName("html")[0];
-        var allImages = document.getElementsByTagName("img");
-
-        for (var i = 0; i < allImages.length; i++) {
-            var el = allImages[i];
-            
-            if (!el.classList.contains(mintClassName))
-                return;
-
-            var id = "mintImage_" + i;
-            var newDiv = document.createElement("div");
-            newDiv.id = id;
-            newDiv.class = "mintImage";
-            el.parentNode.replaceChild(newDiv, el);
-            if (el.classList.contains("noZoom"))
-                mintNoZoom(newDiv, el.src);
-            else
-                mint(newDiv, el.src);
-                
-            
-        }
-    }
+           
+    //******************* END Private methods //*******************//
+    
 }
-
-var mint = new Mint();

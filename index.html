@@ -13,9 +13,13 @@ MINT
 	
 	<script>
 	   
-			window.onload = function () {
-			    mint.mintifyMe();
+	    window.onload = function () {
 
+			    var mintIceberg = new Mint({
+			        src: "graphics/iceberg.jpg",
+			        container: "firstIceberg",
+			    });
+			    
 			};
 
 	</script>
@@ -26,30 +30,31 @@ MINT
         
         <p>This image will zoom out when you touch it. You can pan around and pinch zoom. Responsive? Cake. Resize your browser!</p>
         
-        <img class="mintifyMe" src="graphics/iceberg.jpg" />
+        <div id='firstIceberg'></div>
          
-        <p>Pretty impressive huh? Now check the next one. Small container? easy peasy.</p>
+        <!--
+            <p>Pretty impressive huh? Now check the next one. Small container? easy peasy.</p>
 
-        <h1>Zoom-out image inside a small container</h1>          
+            <h1>Zoom-out image inside a small container</h1>          
 
-        <p>Same image, same effect, same code. No trouble at all.</p>
+            <p>Same image, same effect, same code. No trouble at all.</p>
                         
-        <div id="tinyContainer">
-          <img class="mintifyMe" src="graphics/iceberg.jpg" />
-        </div>
-        <p>Did you like that? Now set your mind to blow for the next sample.</p>
+            <div id="tinyContainer">
+              <img class="mintifyMe" src="graphics/iceberg.jpg" />
+            </div>
+            <p>Did you like that? Now set your mind to blow for the next sample.</p>
 
-        <h1>Not zoom-out zoomable image</h1>
+            <h1>Not zoom-out zoomable image</h1>
                 
-        <p>Just try it.</p>
+            <p>Just try it.</p>
 
-        <div id="noZoomContainer">
-            <img class="mintifyMe noZoom" src="graphics/iceberg.jpg" />
-        </div>
-        <p>Now if you think it's not good enough, check the next samples with different sizes of images or click here for 
-            an amazing image gallery that will (something like blow your mind but not blow your mind as it's repetitive).
-        </p>        
-
+            <div id="noZoomContainer">
+                <img class="mintifyMe noZoom" src="graphics/iceberg.jpg" />
+            </div>
+            <p>Now if you think it's not good enough, check the next samples with different sizes of images or click here for 
+                an amazing image gallery that will (something like blow your mind but not blow your mind as it's repetitive).
+            </p>        
+        -->
 	
 	
 </BODY>
