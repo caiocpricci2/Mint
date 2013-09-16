@@ -37,6 +37,8 @@ function Mint() {
     var csstransform = getsupportedprop(['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform'])
     var csstransition = getsupportedprop(['transition', 'MozTransition', 'WebkitTransition', 'msTransition', 'OTransition'])
     var csstransformorigin = getsupportedprop(['transform-origin', 'MozTransform-origin', 'WebkitTransform-origin', 'msTransform-origin', 'OTransform-origin'])
+    var loadedMintImages = 0;
+    var numMintImages = 0;
 
     //one finger touch
     var touched = false; //set to true after a touchdown, false after a touchup    
@@ -109,11 +111,14 @@ function Mint() {
     }
 
     function setDarkOverlay() {
+        var height = document.getElementsByTagName("body")[0].offsetHeight;
+        console.log(document.getElementsByTagName("body")[0]);
+        console.log(height);
         darkOverlay = document.createElement('div');
         darkOverlay.style.background = "#333";
         darkOverlay.style.opacity = 0.8;
         darkOverlay.style.width = "100%";
-        darkOverlay.style.height = "100%";
+        darkOverlay.style.height = height+"px";
         darkOverlay.style.position = "absolute";
         darkOverlay.style.top = "0";
         darkOverlay.style.left = "0";
@@ -135,7 +140,7 @@ function Mint() {
 
         image.onload = function () {
 
-        
+            imageLoaded();
 
             this.addEventListener("click", zoomin, false);
             changecssproperty(this, csstransition, "-webkit-transform 0.5s linear");
@@ -153,7 +158,7 @@ function Mint() {
         var image = new Image();
 
         image.onload = function () {
-        
+            imageLoaded();
             changecssproperty(this, csstransition, "-webkit-transform 0.5s linear");
 
         };
@@ -427,7 +432,7 @@ function Mint() {
 
 
     this.mintify = function () {
-        setDarkOverlay();
+        
         htmlElement = document.getElementsByTagName("html")[0];
         var allImages = document.getElementsByTagName("img");
 
@@ -436,7 +441,7 @@ function Mint() {
             
             if (!el.classList.contains(mintClassName))
                 return;
-
+            numMintImages++;
             var id = "mintImage_" + i;
             var newDiv = document.createElement("div");
             newDiv.id = id;
@@ -449,6 +454,14 @@ function Mint() {
                 
             
         }
+    }
+
+    function imageLoaded() {
+        loadedMintImages++;
+        console.log(loadedMintImages === numMintImages);
+        if (loadedMintImages === numMintImages)
+            setDarkOverlay();
+
     }
 }
 
