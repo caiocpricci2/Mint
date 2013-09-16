@@ -21,11 +21,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
+//Different size containers are showing different sized images. 
+//Dark overlay is causing the huge screen. Limit it to 100% and position properly? Overflow hidden? Get rid of the overlay?
+
 function Mint() {
     
     //things you might need to change
     var mintClassName = "mintifyMe"; //if by any chance you have another mintifyMe class, rename this to something unique
     var initialZIndex = 300; // mint relies on the z-index to display images. For obvious reasons all zoom-out images must have a high z-index
+    var DEBUG = true;
 
     var currentImage; //current zoomed image, can only have one at a time. 
     var htmlElement; //holds the html element.
@@ -92,7 +96,7 @@ function Mint() {
             if (prop[0].toLowerCase().trim() == property)
                 return prop[1];
         }
-        console.log(property);
+        
         switch (property) {
             case "translate3d":
                 return "0,0,0";
@@ -108,8 +112,8 @@ function Mint() {
         darkOverlay = document.createElement('div');
         darkOverlay.style.background = "#333";
         darkOverlay.style.opacity = 0.8;
-        darkOverlay.style.width = "5000px";
-        darkOverlay.style.height = "5000px";
+        darkOverlay.style.width = "100%";
+        darkOverlay.style.height = "100%";
         darkOverlay.style.position = "absolute";
         darkOverlay.style.top = "0";
         darkOverlay.style.left = "0";
@@ -125,19 +129,13 @@ function Mint() {
         var image = new Image();
         var hMargin = 10;
         var vMargin = 10;
+        
         var availableWidth = container.offsetWidth - 2 * hMargin;
         var availableHeight = container.offsetHeight - 2 * vMargin;
 
         image.onload = function () {
-            var scaleH = this.naturalHeight / availableHeight;
-            var scaleW = this.naturalWidth / availableWidth;
 
-            var scale = Math.max(scaleH, scaleW);
-
-            imageProps[container.id] = {
-                scale: scale
-            }
-
+        
 
             this.addEventListener("click", zoomin, false);
             changecssproperty(this, csstransition, "-webkit-transform 0.5s linear");
@@ -180,11 +178,15 @@ function Mint() {
 
         if (zoomingOut)
             return;
+
         currentImage = this;
 
         darkOverlay.style.visibility = "visible"
+       
+        var scaleH = this.naturalHeight / this.height;
+        var scaleW = this.naturalWidth / this.width;
+        var scale = Math.max(scaleH, scaleW);            
 
-        var scale = imageProps[this.parentNode.id].scale;
         this.style.zIndex = initialZIndex;        
         this.addEventListener("webkitTransitionEnd", callSetRectBounds);
         changecssproperty(this, csstransition, "-webkit-transform 0.5s linear");
@@ -228,7 +230,7 @@ function Mint() {
     function mousedown(e) {
         if (currentImage === undefined)
             currentImage = this;
-        console.log(currentImage);
+        
         e.targetTouches = [{
             pageX: e.clientX,
             pageY: e.clientY
@@ -300,7 +302,7 @@ function Mint() {
         
         if (currentImage === undefined)
             currentImage = this;
-        console.log(getTransformValue(currentImage, "translate3d"));
+        
         offs = getTransformValue(currentImage, "translate3d").split(",");
         offs[0] = Number(offs[0].substring(0, offs[0].length - 2));
         offs[1] = Number(offs[1].substring(0, offs[1].length - 2));
@@ -357,7 +359,7 @@ function Mint() {
                             diffX;
                                                 
            
-            console.log(diffY, previousDiffY);
+            
             if (Math.abs(diffX) > 1 || Math.abs(diffY > 1)) {
                 previousDiffX = diffX;
                 previousDiffY = diffY;                
@@ -424,7 +426,7 @@ function Mint() {
     }
 
 
-    this.mintifyMe = function () {
+    this.mintify = function () {
         setDarkOverlay();
         htmlElement = document.getElementsByTagName("html")[0];
         var allImages = document.getElementsByTagName("img");
@@ -451,3 +453,7 @@ function Mint() {
 }
 
 var mint = new Mint();
+
+window.onload = function () {
+    mint.mintify();
+};
