@@ -1,6 +1,19 @@
 Mint - Changelog
 
+0.9.1 
 
+Fixes:
+*Fixed the empty scrollable area 
+*Fixed zoom/pan calculatons
+
+Known bugs:
+
+*Not-zoom-out images are not working properly
+
+Todo:
+
+* Test on wp8/w8 
+* find a better way of zooming-out the zoom-in images. Double tap just doesn't sound right
 
 0.8.1 
 

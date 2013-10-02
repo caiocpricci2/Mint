@@ -20,9 +20,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
-//Different size containers are showing different sized images. 
-//Dark overlay is causing the huge screen. Limit it to 100% and position properly? Overflow hidden? Get rid of the overlay?
+//version 0.9.1
 
 function Mint() {
     
@@ -115,7 +113,7 @@ function Mint() {
         console.log(document.getElementsByTagName("body")[0]);
         console.log(height);
         darkOverlay = document.createElement('div');
-        darkOverlay.style.background = "#333";
+        darkOverlay.style.background = "rgba(51,51,51,0.8)";
         darkOverlay.style.opacity = 0.8;
         darkOverlay.style.width = "100%";
         darkOverlay.style.height = height+"px";
@@ -352,8 +350,8 @@ function Mint() {
             var boundsRect = currentImage.getBoundingClientRect();
 
 
-            var limitRight = (window.innerWidth - boundsRect.width) ;
-            var limitBottom = (window.innerHeight - boundsRect.height) ;
+            var limitRight = (window.innerWidth - boundsRect.width * 1.5) ;
+            var limitBottom = (window.innerHeight - boundsRect.height *1.5) ;
           
             
             diffY = (initialBoundRectTop + (diffY) > 0) ? previousDiffY :
@@ -391,12 +389,7 @@ function Mint() {
             var centerY = Math.abs((e.changedTouches[0].pageY - e.changedTouches[1].pageY) / 2)
             var scale = getTransformValue(currentImage, "scale");
             var translate = getTransformValue(currentImage, "translate3d");
-            var newScale = (Number(scale) + (lastDistance - previousDistance) / (100000) * Number(scale));
-            //TODO find a better way of doing this.
-            //zooming out to a certain scale? 
-            //press back button on devices?
-            //double tap?
-            //add a X button to close?
+            var newScale = (Number(scale) + (lastDistance - previousDistance) / (100000) * Number(scale));        
             if (newScale < 1) {
                 changecssproperty(currentImage, csstransform, "scale(" + newScale + ") translate3d(0,0,0)");
                 doubleTapped(currentImage);
