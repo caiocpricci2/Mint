@@ -1,6 +1,6 @@
 /* The MIT License (MIT)
 
-Copyright (c) 2013 caiocpricci2
+Copyright (c) 2013 Caio Ricci
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -21,9 +21,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-//Different size containers are showing different sized images. 
-//Dark overlay is causing the huge screen. Limit it to 100% and position properly? Overflow hidden? Get rid of the overlay?
-
 function Mint() {
     
     //things you might need to change
@@ -34,9 +31,9 @@ function Mint() {
     var currentImage; //current zoomed image, can only have one at a time. 
     var htmlElement; //holds the html element.
     var darkOverlay; //dar overlay displayed above everything else, behind the zoomed in image
-    var csstransform = getsupportedprop(['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform'])
-    var csstransition = getsupportedprop(['transition', 'MozTransition', 'WebkitTransition', 'msTransition', 'OTransition'])
-    var csstransformorigin = getsupportedprop(['transform-origin', 'MozTransform-origin', 'WebkitTransform-origin', 'msTransform-origin', 'OTransform-origin'])
+    var csstransform = getsupportedprop(['transform', 'MozTransform', 'WebkitTransform', 'msTransform', 'OTransform']);
+    var csstransition = getsupportedprop(['transition', 'MozTransition', 'WebkitTransition', 'msTransition', 'OTransition']);
+    var csstransformorigin = getsupportedprop(['transform-origin', 'MozTransform-origin', 'WebkitTransform-origin', 'msTransform-origin', 'OTransform-origin']);
     var loadedMintImages = 0;
     var numMintImages = 0;
 
@@ -71,12 +68,16 @@ function Mint() {
 
     //stores initial images properties values
     var imageProps = {};
+    
+    
+    //Logs
+    var logValuesElement;
 
     function getsupportedprop(proparray) {
-        var root = document.documentElement//reference root element of document
+        var root = document.documentElement;//reference root element of document
         for (var i = 0; i < proparray.length; i++) {//loop through possible properties
             if (proparray[i] in root.style) {//if property exists on element (value will be string, empty string if not set)
-                return proparray[i] //return that string
+                return proparray[i];//return that string
             }
         }
     }
@@ -84,11 +85,13 @@ function Mint() {
 
     function changecssproperty(target, prop, value, action) {
         if (typeof prop != "undefined")
-            target.style[prop] = (action == "remove") ? "" : value
+            target.style[prop] = (action == "remove") ? "" : value;
     }
 
 
     function getTransformValue(element, property) {
+    	if (element === undefined)
+    		return;
         property = property.toLowerCase();
         var values = element.style.webkitTransform.split(")");
         for (var key in values) {
@@ -111,9 +114,7 @@ function Mint() {
     }
 
     function setDarkOverlay() {
-        var height = document.getElementsByTagName("body")[0].offsetHeight;
-        console.log(document.getElementsByTagName("body")[0]);
-        console.log(height);
+        var height = document.getElementsByTagName("body")[0].offsetHeight;        
         darkOverlay = document.createElement('div');
         darkOverlay.style.background = "#333";
         darkOverlay.style.opacity = 0.8;
@@ -186,7 +187,7 @@ function Mint() {
 
         currentImage = this;
 
-        darkOverlay.style.visibility = "visible"
+        darkOverlay.style.visibility = "visible";
        
         var scaleH = this.naturalHeight / this.height;
         var scaleW = this.naturalWidth / this.width;
@@ -239,7 +240,7 @@ function Mint() {
         e.targetTouches = [{
             pageX: e.clientX,
             pageY: e.clientY
-        }]
+        }];
 
         dragDown(e);
     }
@@ -252,7 +253,7 @@ function Mint() {
         e.changedTouches = [{
             pageX: e.clientX,
             pageY: e.clientY
-        }]
+        }];
         dragMove(e);
 
     }
@@ -319,7 +320,7 @@ function Mint() {
                 return;
             } else {
                 taptap = true;
-                setTimeout(function () { taptap = false; }, 200)
+                setTimeout(function () { taptap = false; }, 200);
             }
             
             touched = true;
@@ -330,7 +331,11 @@ function Mint() {
             pinching = true;            
         }
     }
-
+	
+	var limitRight = 0; 
+    var limitBottom =0; 
+    var limitLeft = 0;
+    var limitTop = 0;
     function dragMove(e) {
         if (!touched)
             return;
@@ -352,18 +357,20 @@ function Mint() {
             var boundsRect = currentImage.getBoundingClientRect();
 
 
-            var limitRight = (window.innerWidth - boundsRect.width) ;
-            var limitBottom = (window.innerHeight - boundsRect.height) ;
+            
           
             
-            diffY = (initialBoundRectTop + (diffY) > 0) ? previousDiffY :
+            diffY = (initialBoundRectTop + (diffY) > limitTop) ? previousDiffY :
                         (initialBoundRectTop + (diffY) < limitBottom) ? previousDiffY :
                             diffY;
-            diffX = (initialBoundRectLeft + (diffX) > 0) ? previousDiffX :
+            diffX = (initialBoundRectLeft + (diffX) > limitLeft) ? previousDiffX :
                         (initialBoundRectLeft + (diffX) < limitRight) ? previousDiffX :
                             diffX;
                                                 
-           
+           logValuesElement.innerHTML = "initialBoundRectTop:"+initialBoundRectTop +
+           								"<br/>initialBoundRectLeft:"+initialBoundRectLeft +
+           								"<br/>scale:"+scale +"<br/>diffY:"+diffY+"</br>diffX:"+diffX+"<br/>LimitsX:"+limitLeft +"-"+limitRight+"<br/>LimitsY:"+limitTop+"-"+limitBottom
+           							   +"<br/>boundsRect:"+boundsRect.width+"-"+boundsRect.height;
             
             if (Math.abs(diffX) > 1 || Math.abs(diffY > 1)) {
                 previousDiffX = diffX;
@@ -387,8 +394,8 @@ function Mint() {
                 lastDistance = dist;
             }
 
-            var centerX = Math.abs((e.changedTouches[0].pageX - e.changedTouches[1].pageX) / 2)
-            var centerY = Math.abs((e.changedTouches[0].pageY - e.changedTouches[1].pageY) / 2)
+            var centerX = Math.abs((e.changedTouches[0].pageX - e.changedTouches[1].pageX) / 2);
+            var centerY = Math.abs((e.changedTouches[0].pageY - e.changedTouches[1].pageY) / 2);
             var scale = getTransformValue(currentImage, "scale");
             var translate = getTransformValue(currentImage, "translate3d");
             var newScale = (Number(scale) + (lastDistance - previousDistance) / (100000) * Number(scale));
@@ -402,7 +409,14 @@ function Mint() {
                 doubleTapped(currentImage);
                 return;
             }
-
+            var boundsRect = currentImage.getBoundingClientRect();
+		 	limitRight =  (window.innerWidth - boundsRect.width) ;
+    		limitBottom = (window.innerHeight - boundsRect.height) ;
+		 	var boundsRect = currentImage.getBoundingClientRect();
+ 			logValuesElement.innerHTML = "initialBoundRectTop:"+initialBoundRectTop +
+           								"<br/>initialBoundRectLeft:"+initialBoundRectLeft +
+           								"<br/>scale:"+newScale +"<br/>diffY:"+diffY+"</br>diffX:"+diffX+"<br/>LimitsX:"+limitLeft +"-"+limitRight+"<br/>LimitsY:"+limitTop+"-"+limitBottom
+           							   +"<br/>boundsRect:"+boundsRect.width+"-"+boundsRect.height;
             changecssproperty(currentImage, csstransform, "scale(" + newScale + ") translate3d(" + translate + ")");
         }
 
@@ -419,7 +433,7 @@ function Mint() {
             disablePan = true;
 
             setInitialRectBounds(this);
-            setTimeout(function () { disablePan = false }, 200);
+            setTimeout(function () { disablePan = false; }, 200);
         }
         else {            
             touched = false;
@@ -432,7 +446,7 @@ function Mint() {
 
 
     this.mintify = function () {
-        
+        logValuesElement = document.getElementById("values");
         htmlElement = document.getElementsByTagName("html")[0];
         var allImages = document.getElementsByTagName("img");
 
@@ -454,7 +468,7 @@ function Mint() {
                 
             
         }
-    }
+    };
 
     function imageLoaded() {
         loadedMintImages++;
